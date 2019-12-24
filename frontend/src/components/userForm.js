@@ -37,7 +37,9 @@ class UserForm extends Form {
     read_book: Joi.boolean().label("Read_book"),
     delete_book: Joi.boolean().label("Delete_book"),
     update_book: Joi.boolean().label("Update_book"),
-    admin: Joi.boolean().label("Admin")
+    is_staff: Joi.boolean().label("Admin"),
+    id: Joi.number().allow('').optional()
+   
   }
   async componentDidMount() {
     const userId = this.props.match.params.id;
