@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import Joi from "@hapi/joi";
-import Button from "@material-ui/core/Button";
+// import Button from "@material-ui/core/Button";
 import InputForm from "./inputForm";
+import Button from '@material/react-button';
 export class Form extends Component {
          state = {
            user: {
@@ -40,10 +41,9 @@ export class Form extends Component {
          };
 
          handleSubmit = e => {
-          //  const errors = this.validate();
-          //  debugger
-          //  this.setState({ errors: errors || {} });
-          //  if (errors) return;
+           const errors = this.validate();
+           this.setState({ errors: errors || {} });
+           if (errors) return;
            this.doSubmit();
          };
          
@@ -59,13 +59,13 @@ export class Form extends Component {
            this.setState({ user, errors });
          };
          renderButton(label) {
-         
+         console.log(this.validate())
            return (
              <Button
                onClick={this.handleSubmit}
                variant="contained"
                color="primary"
-              //  disabled={this.validate()}
+               disabled={this.validate()}
              >
                {label}
              </Button>
