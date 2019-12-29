@@ -9,6 +9,11 @@ import json
 
 
 # Create your views here.
+class loggedInUser(generics.RetrieveAPIView):
+    def get(self, request, **args):
+        request.headers
+        return HttpResponse(data=UserSerializer().data)
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -54,7 +59,7 @@ class LoginAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-       
+
         payload = {
             'id': user.id,
             'email': user.email,
@@ -65,8 +70,9 @@ class LoginAPI(generics.GenericAPIView):
             'update_book': user.update_book,
             'is_staff':user.is_staff
         }
-        jwt_token = {'token': jwt.encode(
-            payload, "SECRET_KEY").decode('utf-8')}
+        jwt_token = {
+            'token': jwt.encode(payload, "SECRET_KEY").decode('utf-8')
+            }
         return HttpResponse(
             json.dumps(jwt_token),
             status=200,

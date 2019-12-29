@@ -4,8 +4,9 @@ import Joi from "@hapi/joi";
 import { Cell, Grid, Row } from "@material/react-layout-grid";
 import Card from "@material/react-card";
 import { Headline5, Subtitle1, Subtitle2 } from "@material/react-typography";
-import { login } from "./../services/authSerices";
-import { Link } from "react-router-dom";
+import { login } from '../actions/auth';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 class LoginForm extends Form {
   state = {
@@ -23,23 +24,13 @@ class LoginForm extends Form {
       .label("Password")
   }
 
-  doSubmit = async () => {
-    try {
-      const { user } = this.state;
-      const { data: jwt } = await login(user.username, user.password);
-      localStorage.setItem("token", jwt["token"]);
-      this.props.uponLogin(jwt)
-      this.props.history.push("/home");
-    } catch (ex) {
-      if (ex.response && ex.response.status === 400) {
-        const errors = { ...this.state.errors };
-        errors.username = ex.response.data.non_field_errors;
-        this.setState({ errors });
-        console.log(errors)
-      }
-    }
+  doSubmit = e => {
+    this.props.login(this.state.user.username,this.state.user.password )
   };
   render() {
+    if (this.props.isAuthenticated){
+      return <Redirect to='/home'/>;
+    }
     return (
       <React.Fragment>
         <Grid>
@@ -90,4 +81,7 @@ class LoginForm extends Form {
     );
   }
 }
-export default LoginForm;
+const mapStateToProps = state => ({
+isAuthenticated:state.auth.isAuthenticated
+});
+export default connect(mapStateToProps, {login})(LoginForm);

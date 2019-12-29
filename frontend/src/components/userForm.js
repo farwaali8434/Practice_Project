@@ -1,11 +1,18 @@
-import React, { Component } from 'react';
-import  Form  from './form';
+import React, { Component } from "react";
+import Form from "./form";
 import { Cell, Grid, Row } from "@material/react-layout-grid";
 import Card from "@material/react-card";
 import { Headline5, Subtitle1, Subtitle2 } from "@material/react-typography";
-import Checkbox from '@material/react-checkbox';
+import Checkbox from "@material/react-checkbox";
 import Joi from "@hapi/joi";
-import { getUser, saveUser } from "./../services/getUsers";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import {
+  addUser,
+  getUser,
+  mappingUser,
+  checkBoxChange, saveUser
+} from "./../actions/users";
 
 class UserForm extends Form {
   state = {
@@ -17,10 +24,16 @@ class UserForm extends Form {
       read_book: false,
       update_book: false,
       delete_book: false,
-      is_staff:false
+      is_staff: false
     },
     errors: {}
   };
+
+  static propTypes = {
+    addUser: PropTypes.func.isRequired,
+    getUser: PropTypes.func.isRequired
+  };
+
   Joi = require("@hapi/joi");
   schema = {
     username: Joi.string()
@@ -38,33 +51,27 @@ class UserForm extends Form {
     delete_book: Joi.boolean().label("Delete_book"),
     update_book: Joi.boolean().label("Update_book"),
     is_staff: Joi.boolean().label("Admin"),
-    id: Joi.number().allow('').optional()
-   
-  }
-  async componentDidMount() {
+    id: Joi.number()
+      .allow("")
+      .optional()
+  };
+  componentDidMount() {
     const userId = this.props.match.params.id;
   
     if (userId === "new") return;
-    try {
-      const { data: user } = await getUser(userId);
-    
-      // if(!user) return this.props.history.replace('/not-found')
-      
+    else {
+      let [user] = this.props.users.filter(u => userId == u.id);   
       this.setState({ user: this.mapToViewModel(user) });
-    
-     
-    } catch (ex) {
-    //   if (ex.response && ex.response.status === 404)
-    //     return this.props.history.replace("/not-found");
-    // }
+    }
   }
-}
+
   checkboxChangeHandler = e => {
-    const user = { ...this.state.user, [e.target.name]: e.target.checked };
-    this.setState({ user });
+    const users = { ...this.state.user, [e.target.name]: e.target.checked };
+    this.props.checkBoxChange(users);
   };
 
   mapToViewModel(user) {
+
     return {
       id: user.id,
       username: user.username,
@@ -73,27 +80,30 @@ class UserForm extends Form {
       read_book: user.read_book,
       delete_book: user.delete_book,
       update_book: user.update_book,
-      is_staff:user.is_staff
+      is_staff: user.is_staff
     };
   }
-  doSubmit = async () => {
-      try{
-        
-          await saveUser(this.state.user);
-         
-          this.props.history.push("/home");
-      }
-    catch(ex){
-        if (ex.response && ex.response.status === 400){
-            const errors = {...this.state.errors};
-            errors.username = ex.response.data.username;
-            this.setState({errors});
-        }
-    }
-  }
- 
-  
-   
+  // doSubmit = async () => {
+  //     try{
+
+  //         await saveUser(this.state.user);
+
+  //         this.props.history.push("/home");
+  //     }
+  //   catch(ex){
+  //       if (ex.response && ex.response.status === 400){
+  //           const errors = {...this.state.errors};
+  //           errors.username = ex.response.data.username;
+  //           this.setState({errors});
+  //       }
+  //   }
+  // }
+  doSubmit = () => {
+    this.props.saveUser(this.state.user);
+    window.location = '/home';
+    // this.props.addUser(this.state.user);
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -179,7 +189,6 @@ class UserForm extends Form {
                           name="update_book"
                           nativeControlId="update_book"
                           checked={this.state.user.update_book}
-                        
                           onChange={this.checkboxChangeHandler}
                         />
                         <label htmlFor="update_book">Update Status</label>
@@ -227,6 +236,13 @@ class UserForm extends Form {
     );
   }
 }
-    
- 
-export default UserForm;
+const mapStateToProps = state => ({
+  users: state.users.users
+});
+
+export default connect(mapStateToProps, {
+  addUser,
+  getUser,
+  mappingUser,
+  checkBoxChange, saveUser
+})(UserForm);

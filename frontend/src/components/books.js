@@ -7,20 +7,24 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { getBooks } from './../services/getBooks';
 import Button from "@material/react-button";
 import { Link } from 'react-router-dom';
+import {getBooks} from '../actions/books';
+import { connect } from 'react-redux';
 class Books extends Form {
   state = {
     books: []
   };
-  async componentDidMount() {
-    const { data: books } = await getBooks();
-    this.setState({ books });
+  // async componentDidMount() {
+  //   const { data: books } = await getBooks();
+  //   this.setState({ books });
+  // }
+  componentDidMount(){
+    this.props.getBooks();
   }
   render() {
     const {user} = this.props;
-    const {books} =this.state;
+    const {books} =this.props;
     return (
       <React.Fragment>
         <Paper>
@@ -66,5 +70,10 @@ class Books extends Form {
     );
   }
 }
-
-export default Books;
+const mapStateToProps = state =>(
+{
+  user:state.auth.user,
+  books: state.books.books
+}
+)
+export default connect(mapStateToProps, {getBooks})(Books);
