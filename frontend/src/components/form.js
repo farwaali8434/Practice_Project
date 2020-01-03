@@ -59,7 +59,6 @@ export class Form extends Component {
            this.setState({ user, errors });
          };
          renderButton(label) {
-         console.log(this.validate())
            return (
              <Button
                onClick={this.handleSubmit}

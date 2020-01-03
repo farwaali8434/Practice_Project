@@ -7,7 +7,7 @@ import { CHANGE_PAGE, SEARCH } from './../actions/types';
 const initialState = {
   users: [],
   searchQuery: "",
-  rowsPerPage: 3,
+  rowsPerPage: 3, 
   page: 0,
 };
 export default function (state = initialState, action){

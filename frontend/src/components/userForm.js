@@ -7,13 +7,18 @@ import Checkbox from "@material/react-checkbox";
 import Joi from "@hapi/joi";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Button from "@material/react-button";
 import {
   addUser,
   getUser,
   mappingUser,
-  checkBoxChange, saveUser
+  checkBoxChange,
+  saveUser
 } from "./../actions/users";
-
+import { addImage, postForm, imagehandler } from "../actions/images";
+import { addVideo, videohandler } from "../actions/videos";
+import TextField from "@material-ui/core/TextField";
+import { Redirect } from "react-router-dom";
 class UserForm extends Form {
   state = {
     user: {
@@ -26,7 +31,9 @@ class UserForm extends Form {
       delete_book: false,
       is_staff: false
     },
-    errors: {}
+    errors: {},
+    images: null,
+    videos: null
   };
 
   static propTypes = {
@@ -57,10 +64,11 @@ class UserForm extends Form {
   };
   componentDidMount() {
     const userId = this.props.match.params.id;
-  
+
     if (userId === "new") return;
     else {
-      let [user] = this.props.users.filter(u => userId == u.id);   
+      let [user] = this.props.users.filter(u => userId == u.id);
+
       this.setState({ user: this.mapToViewModel(user) });
     }
   }
@@ -71,7 +79,6 @@ class UserForm extends Form {
   };
 
   mapToViewModel(user) {
-
     return {
       id: user.id,
       username: user.username,
@@ -83,25 +90,40 @@ class UserForm extends Form {
       is_staff: user.is_staff
     };
   }
-  // doSubmit = async () => {
-  //     try{
 
-  //         await saveUser(this.state.user);
-
-  //         this.props.history.push("/home");
-  //     }
-  //   catch(ex){
-  //       if (ex.response && ex.response.status === 400){
-  //           const errors = {...this.state.errors};
-  //           errors.username = ex.response.data.username;
-  //           this.setState({errors});
-  //       }
-  //   }
-  // }
+  imageChange = e => {
+    this.setState({ images: e.target.files });
+  };
+  videoChange = e => {
+    this.setState({ videos: e.target.files });
+  };
+  searchHandle = e => {
+    this.props.searchHandler(e.target.value);
+  };
   doSubmit = () => {
-    this.props.saveUser(this.state.user);
-    window.location = '/home';
-    // this.props.addUser(this.state.user);
+    let fd = new FormData();
+
+    if (this.state.images) {
+      for (let i = 0; i < this.state.images.length; i++) {
+        fd.append("images", this.state.images[i], this.state.images[i].name);
+      }
+    }
+    if (this.state.videos) {
+      for (let v = 0; v < this.state.videos.length; v++) {
+        fd.append("videos", this.state.videos[v], this.state.videos[v].name);
+      }
+    }
+
+    fd.append("username", this.state.user.username);
+    fd.append("email", this.state.user.email);
+    fd.append("password", this.state.user.password);
+    fd.append("is_staff", this.state.user.is_staff);
+    fd.append("read_book", this.state.user.read_book);
+    fd.append("delete_book", this.state.user.delete_book);
+    fd.append("update_book", this.state.user.update_book);
+
+    this.props.saveUser(fd);
+    this.props.history.push("/home");
   };
 
   render() {
@@ -218,12 +240,88 @@ class UserForm extends Form {
                   </Cell>
                   <Cell desktopColumns={3} tabletColumns={1} />
                 </Row>
-                <Row>
+                <Row className="inputFields">
                   <Cell desktopColumns={1} tabletColumns={0} />
-                  <Cell desktopColumns={8} tabletColumns={7}>
-                    <Cell tabletColumns={6} style={{ textAlign: "right" }}>
-                      {this.renderButton("Save")}
-                    </Cell>
+                  <Cell desktopColumns={10} tabletColumns={7}>
+                    <Row>
+                      <Cell order={1}>
+                        <Button variant="contained" color="primary">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={this.imageChange}
+                            name="images"
+                            id="raised-button-file"
+                            multiple
+                            label="Upload Images"
+                            //  value={this.state.images}
+                            type="file"
+                          />
+                          <label htmlFor="raised-button-file">
+                            Upload Images
+                          </label>
+                        </Button>
+
+                        {this.state.images
+                          ? [...this.state.images].map(file => {
+                              return (
+                                file.name,
+                                (
+                                  <img
+                                    height="70"
+                                    width="70"
+                                    src={URL.createObjectURL(file)}
+                                  ></img>
+                                )
+                              );
+                            })
+                          : null}
+                      </Cell>
+                      <Cell order={2}>
+                        <Button variant="contained" color="primary">
+                          <input
+                            type="file"
+                            accept="video/*"
+                            style={{ display: "none" }}
+                            onChange={this.videoChange}
+                            name="video"
+                            id="video"
+                            multiple
+                            label="Upload Videos"
+                            type="file"
+                          />
+                          <label htmlFor="video">Upload Videos</label>
+                        </Button>
+                        {this.state.videos
+                          ? [...this.state.videos].map(file => {
+                              return (
+                                file.name,
+                                (
+                                  <video
+                                    height="70"
+                                    width="70"
+                                    autoPlay={false}
+                                    controls
+                                  >
+                                    <source
+                                      src={URL.createObjectURL(file)}
+                                      type="video/mp4"
+                                    ></source>
+                                  </video>
+                                )
+                              );
+                            })
+                          : null}
+                      </Cell>
+                      <Cell
+                        order={3}
+                        tabletColumns={6}
+                        style={{ textAlign: "right" }}
+                      >
+                        {this.renderButton("Save")}
+                      </Cell>
+                    </Row>
                   </Cell>
                   <Cell desktopColumns={3} tabletColumns={1} />
                 </Row>
@@ -237,12 +335,20 @@ class UserForm extends Form {
   }
 }
 const mapStateToProps = state => ({
-  users: state.users.users
+  users: state.users.users,
+  images: state.images.images,
+  videos: state.videos.videos
 });
 
 export default connect(mapStateToProps, {
   addUser,
   getUser,
   mappingUser,
-  checkBoxChange, saveUser
+  checkBoxChange,
+  saveUser,
+  addImage,
+  imagehandler,
+  addVideo,
+  postForm,
+  videohandler
 })(UserForm);

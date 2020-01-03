@@ -18,6 +18,12 @@ export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const LOGIN_FAILED = "LOGIN_FAILED";
 export const SEARCH = "SEARCH";
 export const GET_BOOKS = "GET_BOOKS";
+export const GET_IMAGES = "GET_IMAGES";
+export const GET_VIDEOS = "GET_VIDEOS";
+export const ADD_IMAGES = "ADD_IMAGES";
+export const ADD_VIDEOS = "ADD_VIDEOS";
+export const CHANGE_IMAGES = "CHANGE_IMAGES";
+export const CHANGE_VIDEOS = "CHANGE_VIDEOS";
 
 
 

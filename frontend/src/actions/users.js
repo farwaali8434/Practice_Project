@@ -28,14 +28,15 @@ export const deleteUser = (id) => dispatch => {
     .catch(err => console.log(err));
 };
 // adding user
-export const addUser = user => dispatch => {
+export const addUser = fd => dispatch => {
   axios
-    .post("/api/users/", user)
+    .post("/api/users/", fd)
     .then(res => {
       dispatch({
         type: ADD_USER,
         payload: res.data
       });
+      console.log(res);
     })
     .catch(err => {
       const errors = {

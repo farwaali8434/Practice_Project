@@ -12,7 +12,11 @@ import { Link } from "react-router-dom";
 import { TextField } from "@material-ui/core";
 import {connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Cell, Grid, Row } from "@material/react-layout-grid";
 import { getUsers, deleteUser, changePage, changeRows , searchHandler} from "./../actions/users";
+import { getImages } from './../actions/images';
+import { getVideos } from './../actions/videos';
+import { Subtitle2 } from "@material/react-typography";
 
  export class TableUsers extends Component {
           static propTypes = {
@@ -22,14 +26,14 @@ import { getUsers, deleteUser, changePage, changeRows , searchHandler} from "./.
           };
 
           componentDidMount() {
+
             this.props.getUsers();
+            this.props.getImages();
+            this.props.getVideos();
           }
           searchHandle = e => {
             this.props.searchHandler(e.target.value);
             // this.setState({ [e.target.name]: e.target.value });
-          };
-
-          handleDelete = async user => {
           };
 
           handleChangePage = (event, newPage) => {
@@ -41,9 +45,8 @@ import { getUsers, deleteUser, changePage, changeRows , searchHandler} from "./.
           };
 
           render() {
-            // let {users} = this.props;
-            // let { users, rowsPerPage, page, searchQuery } = this.state;
-            let { users, searchQuery, page, rowsPerPage } = this.props;
+          
+            let { users, searchQuery, page, rowsPerPage, images , videos} = this.props;
             if (searchQuery)
               users = users.filter(u => {
                 let email_search = u.email
@@ -56,6 +59,7 @@ import { getUsers, deleteUser, changePage, changeRows , searchHandler} from "./.
               });
 
             return (
+
               <React.Fragment>
                 <TextField
                   label="Search.."
@@ -63,18 +67,21 @@ import { getUsers, deleteUser, changePage, changeRows , searchHandler} from "./.
                   value={this.props.searchQuery}
                   onChange={this.searchHandle}
                 ></TextField>
+                <Grid>
                 <Paper>
                   <TableContainer>
-                    <Table>
+                    <Table >
                       <TableHead>
                         <TableRow>
                           <TableCell>Username</TableCell>
                           <TableCell align="right">Email</TableCell>
-                          <TableCell align="right">Password</TableCell>
+                          <TableCell width="1%" size="small" align="center">Password</TableCell>
                           <TableCell align="right">Status Read</TableCell>
                           <TableCell align="right">Status Delete</TableCell>
                           <TableCell align="right">Status Update</TableCell>
                           <TableCell align="right">Admin</TableCell>
+                          <TableCell colSpan={2}align="center">Images</TableCell>
+                          <TableCell colSpan={2} align="center">Videos</TableCell>
                           <TableCell align="right"> </TableCell>
                         </TableRow>
                       </TableHead>
@@ -92,7 +99,7 @@ import { getUsers, deleteUser, changePage, changeRows , searchHandler} from "./.
                                 <TableCell align="right">
                                   {user.email}
                                 </TableCell>
-                                <TableCell align="right">
+                                <TableCell width={1} size="small" align="right">
                                   {user.password}
                                 </TableCell>
                                 <TableCell align="right">
@@ -107,6 +114,22 @@ import { getUsers, deleteUser, changePage, changeRows , searchHandler} from "./.
                                 <TableCell align="right">
                                   {user.is_staff === true ? "Yes" : "No"}
                                 </TableCell>
+                               
+                                 { images.map(image=> image.user==user.username ?
+                                 (
+                                  <TableCell align="right" key={image.id}>
+                                    <img height="100" width="100"  src={image.image}/>
+                                  </TableCell>):null
+                                ) } 
+                                
+                                {videos.map(video =>  video.user==user.username?
+                                
+                                  (<TableCell align="justify" key={video.id}>
+                                    <video height="100" width="100" autoPlay={false} controls>
+                                      <source src={video.video} type='video/mp4' />
+                                    </video>  
+                                  </TableCell>):null) 
+                                }
                                 <TableCell align="right">
                                   <Button
                                     // onClick={() => this.handleDelete(user)}
@@ -138,6 +161,7 @@ import { getUsers, deleteUser, changePage, changeRows , searchHandler} from "./.
                     onChangeRowsPerPage={this.handleChangeRowsPerPage}
           />
                 </Paper>
+                </Grid>
               </React.Fragment>
             );
           }
@@ -146,8 +170,10 @@ const mapStateToProps = state =>({
   users:state.users.users,
   rowsPerPage: state.users.rowsPerPage,
   searchQuery: state.users.searchQuery,
-  page: state.users.page
+  page: state.users.page,
+  images: state.images.images,
+  videos:state.videos.videos
 })
 export default connect(mapStateToProps, 
-  {getUsers, deleteUser, changePage, changeRows, searchHandler})
+  {getUsers, deleteUser, changePage, changeRows, searchHandler, getImages, getVideos})
   (TableUsers);

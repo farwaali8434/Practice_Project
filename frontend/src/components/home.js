@@ -17,7 +17,7 @@ class Home extends Component {
     if (!user) return "";
     return (
       <React.Fragment>
-        <NavBar user={user} />
+        <NavBar user={user}/>
          {user.is_staff &&
         <TableUsers />
        } 

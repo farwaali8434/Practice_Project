@@ -25,7 +25,6 @@ export const login = (username, password) => dispatch => {
       });
     })
     .catch(err => {
-      debugger;
       const errors = {
         msg: err.response.data,
         status: err.response.status

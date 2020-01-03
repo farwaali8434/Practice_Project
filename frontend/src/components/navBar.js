@@ -31,8 +31,8 @@ class NavBar extends Component {
                 </TopAppBarSection>
               </TopAppBarRow>
             </TopAppBar>
-            <TopAppBarFixedAdjust align='middle'>
-              <Subtitle1>Welcome {user.username} </Subtitle1>
+            <TopAppBarFixedAdjust align='middle' >
+              <Subtitle1 >Welcome {user.username} </Subtitle1>
             </TopAppBarFixedAdjust>
           </React.Fragment>
         );
