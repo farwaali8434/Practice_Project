@@ -74,8 +74,9 @@ class UserForm extends Form {
   }
 
   checkboxChangeHandler = e => {
-    const users = { ...this.state.user, [e.target.name]: e.target.checked };
-    this.props.checkBoxChange(users);
+    const user = { ...this.state.user, [e.target.name]: e.target.checked };
+    // this.props.checkBoxChange(users);
+    this.setState({user});
   };
 
   mapToViewModel(user) {
