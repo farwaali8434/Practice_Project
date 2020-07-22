@@ -1,15 +1,15 @@
-from django.shortcuts import render
 from .models import User, Book, Image, Video
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
-from rest_framework import views, viewsets, permissions, generics, mixins
-from .serializers import UserSerializer, BookSerializer, RegisterSerializer, LoginSerializer, ImageSerializer, VideoSerializer
-from django.http import HttpResponse
-import jwt
 import json
-from rest_framework.parsers import MultiPartParser, FormParser
 
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+import jwt
+from django.http import HttpResponse
+from rest_framework import viewsets, generics
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
+
+from .models import User, Book, Image, Video
+from .serializers import UserSerializer, BookSerializer, RegisterSerializer, LoginSerializer, ImageSerializer, VideoSerializer
+
 
 # Create your views here.
 

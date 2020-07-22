@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { GET_USERS, DELETE_USER, UPDATE_USER, 
   ADD_USER, GET_USER, GET_ERRORS, CHANGE_PAGE, 
   CHANGE_ROWS, SEARCH, MAP_USER, CHANGE_CHECKBOX } from './types';
@@ -108,12 +109,16 @@ export const checkBoxChange = (user) => dispatch => {
   })
 };
 //Saving User
-export const saveUser = user => dispatch => {
+export const saveUser = (fd, user) => dispatch => {
+  
   if(user.id){
       let body = {...user};
       delete body.id;
+    
+
     axios.put('/api/users/' + user.id + '/', body)
     .then(res => {
+      window.location = '/home';
       dispatch({
         type: UPDATE_USER,
         payload: res.data
@@ -122,8 +127,9 @@ export const saveUser = user => dispatch => {
       .catch(err => console.log(err));
     }
   else{
-  axios.post('/api/auth/register', user
+  axios.post('/api/auth/register', fd
     ).then(res=>{
+      window.location = '/home';
       dispatch({
         type:ADD_USER,
         payload:res.data

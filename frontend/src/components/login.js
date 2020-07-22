@@ -68,6 +68,7 @@ class LoginForm extends Form {
                   <Cell desktopColumns={10} tabletColumns={6}>
                     <Cell tabletColumns={6} style={{ textAlign: "right" }}>
                       {this.renderButton("Log In")}
+                      
                     </Cell>
                   </Cell>
                   <Cell desktopColumns={3} tabletColumns={1} />

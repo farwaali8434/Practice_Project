@@ -94,6 +94,7 @@ class UserForm extends Form {
 
   imageChange = e => {
     this.setState({ images: e.target.files });
+
   };
   videoChange = e => {
     this.setState({ videos: e.target.files });
@@ -123,8 +124,9 @@ class UserForm extends Form {
     fd.append("delete_book", this.state.user.delete_book);
     fd.append("update_book", this.state.user.update_book);
 
-    this.props.saveUser(fd);
-    this.props.history.push("/home");
+    this.props.saveUser(fd, this.state.user);
+    console.log(fd);
+ 
   };
 
   render() {

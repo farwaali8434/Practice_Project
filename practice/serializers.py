@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'username', 'password', 'read_book',
-                  'update_book', 'delete_book', 'is_staff', 'images')
+                  'update_book', 'delete_book', 'is_staff')
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class VideoSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         video = Video.objects.create(
             video=validated_data['video'], user=validated_data['user'])
-        return image
+        return video
 
 class RegisterSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
